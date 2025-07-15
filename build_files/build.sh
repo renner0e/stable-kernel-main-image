@@ -2,16 +2,16 @@
 
 set -ouex pipefail
 
-# List available kernels with
+# List available kernels with:
 # skopeo inspect docker://ghcr.io/ublue-os/akmods:coreos-stable-42 | grep coreos-stable-42-6.14
 
 KERNEL_PIN=6.14.11-300
 
-# Install the pinned kernel if KERNEL_PIN is specified
 if [[ -z "${KERNEL_PIN:-}" ]]; then
     # installs coreos kernel
     KERNEL=$(skopeo inspect --retry-times 3 docker://ghcr.io/ublue-os/akmods:coreos-stable-"$(rpm -E %fedora)" | jq -r '.Labels["ostree.linux"]')
 else
+    # Install the pinned kernel if KERNEL_PIN is specified
     KERNEL=$(skopeo inspect --retry-times 3 docker://ghcr.io/ublue-os/akmods:coreos-stable-"$(rpm -E %fedora)"-${KERNEL_PIN} | jq -r '.Labels["ostree.linux"]')
 fi
 
