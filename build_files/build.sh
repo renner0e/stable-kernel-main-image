@@ -2,7 +2,10 @@
 
 set -ouex pipefail
 
-KERNEL_PIN=6.14.9-300.fc$(rpm -E %fedora).$(uname -m)
+# List available kernels with
+# skopeo inspect docker://ghcr.io/ublue-os/akmods:coreos-stable-42 | grep coreos-stable-42-6.14
+
+KERNEL_PIN=6.14.11-300
 
 # Install the pinned kernel if KERNEL_PIN is specified
 if [[ -z "${KERNEL_PIN:-}" ]]; then
