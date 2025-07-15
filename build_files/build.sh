@@ -2,23 +2,19 @@
 
 set -ouex pipefail
 
-### Install packages
+#KERNEL_PIN=
+KERNEL=$(skopeo inspect --retry-times 3 docker://ghcr.io/ublue-os/akmods:coreos-stable-"$(rpm -E %fedora)" | jq -r '.Labels["ostree.linux"]')
 
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
+skopeo copy --retry-times 3 docker://ghcr.io/ublue-os/akmods:coreos-stable-"$(rpm -E %fedora)" dir:/tmp/akmods
+AKMODS_TARGZ=$(jq -r '.layers[].digest' </tmp/akmods/manifest.json | cut -d : -f 2)
+tar -xvzf /tmp/akmods/"$AKMODS_TARGZ" -C /tmp/
+mv /tmp/rpms/* /tmp/akmods/
 
-# this installs a package from fedora repos
-dnf5 install -y tmux 
+dnf5 -y install /tmp/kernel-rpms/kernel-{core,modules,modules-core,modules-extra}-"${KERNEL}".rpm
+# CoreOS doesn't do kernel-tools, removes leftovers from newer kernel
+dnf5 -y remove kernel-tools{,-libs}
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
 
-#### Example for enabling a System Unit File
+# Prevent kernel stuff from upgrading again
+dnf5 versionlock add kernel{,-core,-modules,-modules-core,-modules-extra,-tools,-tools-lib,-headers,-devel,-devel-matched}
 
-systemctl enable podman.socket
