@@ -2,4 +2,4 @@
 
 Magic happens here:
 
-https://github.com/renner0e/stable-kernel-main-image/blob/main/build_files/build.sh#L6
+https://github.com/renner0e/stable-kernel-main-image/blob/main/build_files/build.sh
