@@ -2,7 +2,7 @@
 
 set -ouex pipefail
 
-#KERNEL_PIN=6.14.9-300.fc$(rpm -E %fedora).$(uname -m)
+KERNEL_PIN=6.14.9-300.fc$(rpm -E %fedora).$(uname -m)
 
 # Install the pinned kernel if KERNEL_PIN is specified
 if [[ -z "${KERNEL_PIN:-}" ]]; then
